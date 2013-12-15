@@ -8,8 +8,8 @@ xiami-for-mac-lastfm-scrobbler是一个本地运行的脚本，用于将**虾米
 安装指南
 =====
 
-easy_install pylast
-brew install ngrep
+1. easy_install pylast
+2. brew install ngrep
 
 
 用法
