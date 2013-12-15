@@ -82,7 +82,7 @@ def handle_cached_dir(dir):
 			
                         if count == 0:
                                 if now_playing != onefile:
-                                        network = getLastFMScrobbleObject()
+
                                         (song_title, artist) = parse_song_info(info[1])
                                         network.update_now_playing(artist, song_title, info[0])
                                         print "Now playing", artist, "-", song_title
@@ -90,7 +90,7 @@ def handle_cached_dir(dir):
                         else:
                                 (song_title, artist) = parse_song_info(info[1])
                                 if int(time.time())-int(info[0]) > 30:
-                                        network = getLastFMScrobbleObject()
+
                                         network.scrobble(artist, song_title, info[0])
                                         print "Scrobbled: ", artist, "-", song_title
                                 else:
