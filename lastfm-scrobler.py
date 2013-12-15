@@ -5,10 +5,11 @@ import pylast
 import os
 import urllib2
 import re
-import threading
 import ConfigParser
+import time
 
 network = None
+now_playing = None
 
 def get_config(config_file):
 	config = ConfigParser.ConfigParser()
@@ -33,7 +34,7 @@ def getLastFMScrobbleObject():
 	return network
 	
 def parse_song_info(song_id):
-	#print song_id
+
 	xml_loc = 'http://www.xiami.com/song/playlist/id/' + song_id + '/object_name/default/object_id/0'
 	#print xml_loc
 
@@ -67,31 +68,43 @@ def parse_song_info(song_id):
 
 
 def handle_cached_dir(dir):
-	print "start handle cached history"
-	global network 
+
+	global network, now_playing
 	filelist = os.listdir(dir)
+        count = len(filelist)
 	for onefile in filelist:
 		filepath = os.path.join(dir,onefile)
+
+                count = count -1
 		if os.path.isfile(filepath): 
 			#filename: timestamp-songid
 			info = onefile.split('-')
-			print info[0], info[1]
-			(song_title, artist) = parse_song_info(info[1])
-			print song_title, artist
-			#network = getLastFMScrobbleObject()
-			network.scrobble(artist, song_title, info[0])
-			os.remove(filepath)
-	timer_start()
+			
+                        if count == 0:
+                                if now_playing != onefile:
+                                        network = getLastFMScrobbleObject()
+                                        (song_title, artist) = parse_song_info(info[1])
+                                        network.update_now_playing(artist, song_title, info[0])
+                                        print "Now playing", artist, "-", song_title
+                                        now_playing = onefile
+                        else:
+                                (song_title, artist) = parse_song_info(info[1])
+                                if int(time.time())-int(info[0]) > 30:
+                                        network = getLastFMScrobbleObject()
+                                        network.scrobble(artist, song_title, info[0])
+                                        print "Scrobbled: ", artist, "-", song_title
+                                else:
+                                        print "Skipped: ", artist, "-", song_title
 
-def timer_start(): 
-	t = threading.Timer(60, handle_cached_dir, {"data"}) 
-	t.start() 
+                                os.remove(filepath)
 
 def main():
 	global network
 	network = getLastFMScrobbleObject()
-	print "start works!"
-	timer_start()
+	print "Scrobbler initiated."
+        while (True):
+                handle_cached_dir("data")
+                time.sleep(1)
 
 if __name__ == '__main__' :
 	main()
