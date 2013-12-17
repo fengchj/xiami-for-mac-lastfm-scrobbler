@@ -10,6 +10,7 @@ import time
 
 network = None
 now_playing = None
+now_playing_countdown = 20
 
 def get_config(config_file):
 	config = ConfigParser.ConfigParser()
@@ -64,12 +65,15 @@ def parse_song_info(song_id):
 		print 'artist not match'
 		artist = "未知"
 
-	return (song_title, artist)
+	return (song_title, artist.split(";")[0])
 
 
 def handle_cached_dir(dir):
 
-	global network, now_playing
+	global network, now_playing, now_playing_countdown
+
+        now_playing_countdown = now_playing_countdown - 1
+
 	filelist = os.listdir(dir)
         count = len(filelist)
 	for onefile in filelist:
@@ -81,12 +85,15 @@ def handle_cached_dir(dir):
 			info = onefile.split('-')
 			
                         if count == 0:
-                                if now_playing != onefile:
+                                if now_playing != onefile or now_playing_countdown == 0:
 
                                         (song_title, artist) = parse_song_info(info[1])
                                         network.update_now_playing(artist, song_title, info[0])
-                                        print "Now playing", artist, "-", song_title
+                                        if now_playing_countdown > 0:
+                                                print "Now playing:", artist, "-", song_title
                                         now_playing = onefile
+                                        now_playing_countdown = 20
+
                         else:
                                 (song_title, artist) = parse_song_info(info[1])
                                 if int(time.time())-int(info[0]) > 30:
@@ -107,4 +114,4 @@ def main():
                 time.sleep(1)
 
 if __name__ == '__main__' :
-	main()
+        main()
