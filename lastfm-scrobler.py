@@ -28,10 +28,6 @@ def getLastFMScrobbleObject():
 	network = pylast.LastFMNetwork(api_key = API_KEY, api_secret = 
 	        API_SECRET, username = username, password_hash = password_hash)
 
-	#track = network.get_track("石进", "初恋的美好")
-	#print track.get_duration()
-	#print track.get_playcount()
-
 	return network
 	
 def parse_song_info(song_id):
@@ -54,7 +50,7 @@ def parse_song_info(song_id):
 		#print song_title
 	else:
 		print 'song_title not match'
-		song_title = "未知"
+		song_title = "Unknown Song"
 
 	artist_reg=r"<artist><\!\[CDATA\[(.*)\]\]></artist>"
 	match = re.search(artist_reg, text)
@@ -63,13 +59,13 @@ def parse_song_info(song_id):
 		#print artist
 	else:
 		print 'artist not match'
-		artist = "未知"
+		artist = "Unkown Artist"
 
 	return (song_title, artist.split(";")[0])
 
 
-def handle_cached_dir(dir):
-
+def handle_cached_dir():
+        dir = "data"
 	global network, now_playing, now_playing_countdown
 
         now_playing_countdown = now_playing_countdown - 1
@@ -105,12 +101,29 @@ def handle_cached_dir(dir):
 
                                 os.remove(filepath)
 
+def handle_fav_dir():
+	global network
+        dir = "fav"
+        filelist = os.listdir(dir)
+
+        for onefile in filelist:
+                filepath = os.path.join(dir,onefile)
+
+                if os.path.isfile(filepath): 
+                        (song_title, artist) = parse_song_info(onefile)
+                        print "Added to favorites:", (song_title, artist)
+                        track = network.get_track(artist, song_title)
+                        track.love()
+
+                os.remove(filepath)
+
 def main():
 	global network
 	network = getLastFMScrobbleObject()
 	print "Scrobbler initiated."
         while (True):
-                handle_cached_dir("data")
+                handle_cached_dir()
+                handle_fav_dir()
                 time.sleep(1)
 
 if __name__ == '__main__' :
