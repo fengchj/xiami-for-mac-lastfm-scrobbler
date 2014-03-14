@@ -5,7 +5,20 @@ xiami-for-mac-lastfm-scrobbler
 
 xiami-for-mac-lastfm-scrobbler是一个本地运行的脚本，用于将**虾米音乐 for Mac**播放的在线音乐历史记录发送到[Last.FM](http://cn.last.fm)。
 
-用法：
+主要功能
+=====
+1. 同步正在听的歌曲
+2. 同步加星歌曲
+
+安装指南
+=====
+
+1. easy_install pylast
+2. brew install ngrep
+
+
+用法
+=====
 
 1. 配置config.ini。输入Last.FM网站的用户名(username)和密码(password)即可，appkey和appserect不必理会。
 2. 启动脚本，开始记录。```./start.sh```
