@@ -111,7 +111,7 @@ def handle_fav_dir():
 
                 if os.path.isfile(filepath): 
                         (song_title, artist) = parse_song_info(onefile)
-                        print "Added to favorites:", (song_title, artist)
+                        print "Added to favorites:", artist, "-", song_title
                         track = network.get_track(artist, song_title)
                         track.love()
 

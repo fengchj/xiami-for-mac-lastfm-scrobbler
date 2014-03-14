@@ -16,4 +16,11 @@ do
 	    touch "$DATA_ROOT"/"$file"
 	fi
 
+	resultfav=$(echo $line | grep 'method=Library.addSong')
+
+	file=$(echo $line | sed -ne 's/.*id=\([0-9]*\).*/\1/p')
+	if [[ "$resultfav" != "" ]]
+	then
+	    touch "$FAV_ROOT"/"$file"
+	fi
 done
